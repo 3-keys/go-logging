@@ -40,12 +40,18 @@ func (self *Logger) Debug(v ...interface{}) {
 func (self *Logger) Info(v ...interface{}) {
 	log := fmt.Sprintf("%s %s %s", time.Now().Format("2006-01-02 15:04:05"), "[INFO]", fmt.Sprint(v...))
 	fmt.Println(color.CyanString(log))
-	self.infoFile.WriteString(log + "\n")
+	if self.infoFile != nil {
+		self.infoFile.WriteString(log + "\n")
+	}
 }
 
 func (self *Logger) Error(v ...interface{}) {
 	log := fmt.Sprintf("%s %s %s", time.Now().Format("2006-01-02 15:04:05"), "[ERROR]", fmt.Sprint(v...))
 	fmt.Println(color.RedString(log))
-	self.errorFile.WriteString(log + "\n")
-	self.infoFile.WriteString(log + "\n")
+	if self.errorFile != nil {
+		self.errorFile.WriteString(log + "\n")
+	}
+	if self.infoFile != nil {
+		self.infoFile.WriteString(log + "\n")
+	}
 }
