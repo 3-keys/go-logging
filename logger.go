@@ -2,56 +2,73 @@ package logging
 
 import (
 	"fmt"
-	"log"
 	"os"
+	"path"
 	"time"
 
 	"github.com/fatih/color"
 )
 
 type Logger struct {
-	infoFile, errorFile *os.File
+	infoFilePath, errorFilePath string
+}
+
+func (logger *Logger) getInfoFile() (*os.File, error) {
+	return os.OpenFile(logger.infoFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+}
+func (logger *Logger) getErrorFile() (*os.File, error) {
+	return os.OpenFile(logger.errorFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 }
 
 func New(infoFilePath string, errorFilePath string) *Logger {
 
-	infoFile, err := os.OpenFile(infoFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0664)
+	err := os.MkdirAll(path.Dir(infoFilePath), 0755)
 	if err != nil {
-		log.Println(err)
-		return nil
+		fmt.Println(err)
 	}
 
-	errorFile, err := os.OpenFile(errorFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0664)
+	err = os.MkdirAll(path.Dir(errorFilePath), 0755)
 	if err != nil {
-		log.Println(err)
-		return nil
+		fmt.Println(err)
 	}
 
-	logger := &Logger{infoFile, errorFile}
+	logger := &Logger{infoFilePath, errorFilePath}
 
 	return logger
 }
 
-func (self *Logger) Debug(v ...interface{}) {
+func (logger *Logger) Debug(v ...interface{}) {
 	log := fmt.Sprintf("%s %s %s", time.Now().Format("2006-01-02 15:04:05"), "[DEBUG]", fmt.Sprint(v...))
 	fmt.Println(color.YellowString(log))
 }
 
-func (self *Logger) Info(v ...interface{}) {
+func (logger *Logger) Info(v ...interface{}) {
 	log := fmt.Sprintf("%s %s %s", time.Now().Format("2006-01-02 15:04:05"), "[INFO]", fmt.Sprint(v...))
 	fmt.Println(color.CyanString(log))
-	if self.infoFile != nil {
-		self.infoFile.WriteString(log + "\n")
+
+	infoFile, err := logger.getInfoFile()
+
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		infoFile.WriteString(log + "\n")
 	}
+
+	defer infoFile.Close()
+
 }
 
-func (self *Logger) Error(v ...interface{}) {
+func (logger *Logger) Error(v ...interface{}) {
 	log := fmt.Sprintf("%s %s %s", time.Now().Format("2006-01-02 15:04:05"), "[ERROR]", fmt.Sprint(v...))
 	fmt.Println(color.RedString(log))
-	if self.errorFile != nil {
-		self.errorFile.WriteString(log + "\n")
+
+	errorFile, err := logger.getErrorFile()
+
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		errorFile.WriteString(log + "\n")
 	}
-	if self.infoFile != nil {
-		self.infoFile.WriteString(log + "\n")
-	}
+
+	defer errorFile.Close()
 }
