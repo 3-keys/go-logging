@@ -1,5 +1,5 @@
 # go-logging
-A brief go logging component
+A lite go logging component
 
 ## Install
 
