@@ -5,7 +5,6 @@ import (
 	"os"
 	"path"
 	"time"
-
 	"github.com/fatih/color"
 )
 
@@ -24,7 +23,7 @@ func New(infoFilePath string, errorFilePath string) *Logger {
 
 	err := os.MkdirAll(path.Dir(infoFilePath), 0755)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Print(err)
 	}
 
 	err = os.MkdirAll(path.Dir(errorFilePath), 0755)
@@ -38,20 +37,20 @@ func New(infoFilePath string, errorFilePath string) *Logger {
 }
 
 func (logger *Logger) Debug(v ...interface{}) {
-	log := fmt.Sprintf("%s %s %s", time.Now().Format("2006-01-02 15:04:05"), "[DEBUG]", fmt.Sprint(v...))
+	log := fmt.Sprintf("%s %s %s", time.Now().Format("2006-01-02 15:04:05"), "[DEBUG]", fmt.Sprintln(v...))
 	fmt.Println(color.YellowString(log))
 }
 
 func (logger *Logger) Info(v ...interface{}) {
-	log := fmt.Sprintf("%s %s %s", time.Now().Format("2006-01-02 15:04:05"), "[INFO]", fmt.Sprint(v...))
-	fmt.Println(color.CyanString(log))
+	log := fmt.Sprintf("%s %s %s", time.Now().Format("2006-01-02 15:04:05"), "[INFO]", fmt.Sprintln(v...))
+	fmt.Print(color.CyanString(log))
 
 	infoFile, err := logger.getInfoFile()
 
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		infoFile.WriteString(log + "\n")
+		infoFile.WriteString(log)
 	}
 
 	defer infoFile.Close()
@@ -59,15 +58,15 @@ func (logger *Logger) Info(v ...interface{}) {
 }
 
 func (logger *Logger) Error(v ...interface{}) {
-	log := fmt.Sprintf("%s %s %s", time.Now().Format("2006-01-02 15:04:05"), "[ERROR]", fmt.Sprint(v...))
-	fmt.Println(color.RedString(log))
+	log := fmt.Sprintf("%s %s %s", time.Now().Format("2006-01-02 15:04:05"), "[ERROR]", fmt.Sprintln(v...))
+	fmt.Print(color.RedString(log))
 
 	errorFile, err := logger.getErrorFile()
 
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		errorFile.WriteString(log + "\n")
+		errorFile.WriteString(log)
 	}
 
 	defer errorFile.Close()
