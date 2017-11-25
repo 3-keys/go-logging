@@ -2,10 +2,10 @@ package logging
 
 import (
 	"fmt"
+	"github.com/fatih/color"
 	"os"
 	"path"
 	"time"
-	"github.com/fatih/color"
 )
 
 type Logger struct {
@@ -70,4 +70,11 @@ func (logger *Logger) Error(v ...interface{}) {
 	}
 
 	defer errorFile.Close()
+}
+
+func (logger *Logger) Fatal(v ...interface{}) {
+
+	logger.Error(v)
+	os.Exit(1)
+
 }
