@@ -38,7 +38,7 @@ func New(infoFilePath string, errorFilePath string) *Logger {
 
 func (logger *Logger) Debug(v ...interface{}) {
 	log := fmt.Sprintf("%s %s %s", time.Now().Format("2006-01-02 15:04:05"), "[DEBUG]", fmt.Sprintln(v...))
-	fmt.Println(color.YellowString(log))
+	fmt.Print(color.YellowString(log))
 }
 
 func (logger *Logger) Info(v ...interface{}) {
