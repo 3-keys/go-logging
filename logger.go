@@ -41,9 +41,14 @@ func (logger *Logger) Debug(v ...interface{}) {
 	fmt.Print(color.YellowString(log))
 }
 
+func (logger *Logger) Verbose(v ...interface{}) {
+	log := fmt.Sprintf("%s %s %s", time.Now().Format("2006-01-02 15:04:05"), "[VERBOSE]", fmt.Sprintln(v...))
+	fmt.Print(color.MagentaString(log))
+}
+
 func (logger *Logger) Info(v ...interface{}) {
 	log := fmt.Sprintf("%s %s %s", time.Now().Format("2006-01-02 15:04:05"), "[INFO]", fmt.Sprintln(v...))
-	fmt.Print(color.CyanString(log))
+	fmt.Print(color.BlueString(log))
 
 	infoFile, err := logger.getInfoFile()
 
