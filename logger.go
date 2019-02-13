@@ -10,6 +10,7 @@ import (
 
 type Logger struct {
 	infoFilePath, errorFilePath string
+	dev                         bool
 }
 
 func (logger *Logger) getInfoFile() (*os.File, error) {
@@ -19,7 +20,7 @@ func (logger *Logger) getErrorFile() (*os.File, error) {
 	return os.OpenFile(logger.errorFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 }
 
-func New(infoFilePath string, errorFilePath string) *Logger {
+func New(infoFilePath string, errorFilePath string, dev bool) *Logger {
 
 	err := os.MkdirAll(path.Dir(infoFilePath), 0755)
 	if err != nil {
@@ -31,7 +32,7 @@ func New(infoFilePath string, errorFilePath string) *Logger {
 		fmt.Println(err)
 	}
 
-	logger := &Logger{infoFilePath, errorFilePath}
+	logger := &Logger{infoFilePath, errorFilePath, dev}
 
 	return logger
 }
@@ -39,11 +40,35 @@ func New(infoFilePath string, errorFilePath string) *Logger {
 func (logger *Logger) Debug(v ...interface{}) {
 	log := fmt.Sprintf("%s %s %s", time.Now().Format("2006-01-02 15:04:05"), "[DEBUG]", fmt.Sprintln(v...))
 	fmt.Print(color.YellowString(log))
+
+	if logger.dev {
+		infoFile, err := logger.getInfoFile()
+
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			infoFile.WriteString(log)
+		}
+
+		defer infoFile.Close()
+	}
 }
 
 func (logger *Logger) Verbose(v ...interface{}) {
 	log := fmt.Sprintf("%s %s %s", time.Now().Format("2006-01-02 15:04:05"), "[VERBOSE]", fmt.Sprintln(v...))
 	fmt.Print(color.MagentaString(log))
+
+	if logger.dev {
+		infoFile, err := logger.getInfoFile()
+
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			infoFile.WriteString(log)
+		}
+
+		defer infoFile.Close()
+	}
 }
 
 func (logger *Logger) Info(v ...interface{}) {
@@ -75,6 +100,17 @@ func (logger *Logger) Error(v ...interface{}) {
 	}
 
 	defer errorFile.Close()
+
+	infoFile, err := logger.getInfoFile()
+
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		infoFile.WriteString(log)
+	}
+
+	defer infoFile.Close()
+
 }
 
 func (logger *Logger) Fatal(v ...interface{}) {
