@@ -3,10 +3,10 @@ A lite go logging component
 
 ## Install
 
-    go get -v github.com/vlinx-io/go-logging
+    go get -v github.com/vlinx2015/go-logging
 
 ## Usage
-	import "github.com/vlinx-io/go-logging"
+	import "github.com/vlinx2015/go-logging"
 	
 	logger := logging.New("info.log", "error.log")
 	logger.Debug("it's a debug msg")
